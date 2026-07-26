@@ -1,0 +1,15 @@
+# Future Upgrades (Brainstorming)
+
+1. **Email / SMS Alerts**
+   - Integrate SendGrid or Twilio into the Node.js backend.
+   - Trigger an automatic SMS to the factory manager if `status === "Critical"`.
+
+2. **Machine Learning Integration**
+   - Collect 3 months of vibration data in the SQLite database.
+   - Train an Isolation Forest or Autoencoder model in Python to detect anomalies automatically without needing hard-coded "Critical" thresholds.
+
+3. **3D Printed Enclosure**
+   - Design a custom 3D-printed case (STL file) that magnetically snaps onto the side of CNC machines to hold the ESP32 securely in place.
+
+4. **Multi-Node Support**
+   - Add a dropdown menu in the Frontend dashboard to switch between "Node_001 (Lathe)", "Node_002 (Conveyor)", and "Node_003 (Pump)".

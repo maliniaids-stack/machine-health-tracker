@@ -1,0 +1,9 @@
+Item,Description,Approximate Cost (INR),Quantity
+ESP32 Development Board,Microcontroller with built-in Wi-Fi and Bluetooth,₹435,1
+MPU-6050 Module,3-Axis Accelerometer and Gyroscope for vibration,₹218,1
+DHT22 Module,Digital Temperature and Humidity Sensor,₹261,1
+Jumper Wires,Female-to-Female for connecting sensors to ESP32,₹87,10
+Breadboard,Half-size for prototyping (optional if soldering),₹174,1
+5V USB Power Supply,Standard phone charger to power the ESP32,₹348,1
+
+Total Estimated Prototype Cost: ~₹1,523

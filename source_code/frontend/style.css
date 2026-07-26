@@ -1,0 +1,275 @@
+:root {
+    /* Light Theme Palette based on UI Image */
+    --bg-dark: #e8f0f8; /* Soft light blue/gray background */
+    --bg-card: #ffffff; /* Crisp white cards */
+    --border-color: rgba(0, 0, 0, 0.04);
+    --text-primary: #1e293b; /* Dark slate for primary text */
+    --text-secondary: #64748b; /* Soft gray for secondary text */
+    --accent-blue: #0ea5e9; /* Vibrant cyan/blue accent */
+    --accent-glow: rgba(14, 165, 233, 0.3);
+    
+    /* Status Colors */
+    --status-normal: #10b981;
+    --status-warning: #f59e0b;
+    --status-critical: #ef4444;
+
+    /* Spacing & Borders */
+    --radius-lg: 24px; /* More rounded, friendly edges */
+    --radius-md: 14px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    background-image: radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.05), transparent 40%),
+                      radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05), transparent 40%);
+}
+
+/* Glassmorphism / Soft UI utility */
+.glass-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08); /* Soft elevated shadow */
+    transition: var(--transition);
+}
+
+.glass-card:hover {
+    box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.15); /* Blue tinted shadow on hover */
+    transform: translateY(-2px);
+}
+
+/* Layout */
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--accent-blue);
+    box-shadow: 0 0 12px var(--accent-glow);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+}
+
+.top-nav h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    font-family: inherit;
+}
+
+.btn.primary {
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.39);
+}
+
+.btn.primary:hover {
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
+    transform: translateY(-1px);
+}
+
+.btn.primary:active {
+    transform: translateY(1px);
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* KPI Section */
+.kpi-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.kpi-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.kpi-card h3 {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.kpi-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-blue); /* Match UI vibrant text */
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.kpi-value .unit {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.status-normal .status-dot { background-color: var(--status-normal); box-shadow: 0 0 8px var(--status-normal); }
+.status-warning .status-dot { background-color: var(--status-warning); box-shadow: 0 0 8px var(--status-warning); }
+.status-critical .status-dot { background-color: var(--status-critical); box-shadow: 0 0 8px var(--status-critical); }
+.status-unknown .status-dot { background-color: var(--text-secondary); }
+
+.status-text {
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+.status-normal .status-text { color: var(--status-normal); }
+.status-warning .status-text { color: var(--status-warning); }
+.status-critical .status-text { color: var(--status-critical); }
+
+/* Filters Section */
+.filter-section {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background: #ffffff;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.filter-group label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+select {
+    background: #f8fafc;
+    color: var(--text-primary);
+    border: 1px solid #e2e8f0;
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+select:focus, select:hover {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Charts Section */
+.charts-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .charts-section {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-header {
+    margin-bottom: 1.5rem;
+}
+
+.chart-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+canvas {
+    flex-grow: 1;
+    width: 100% !important;
+    height: 100% !important;
+}
