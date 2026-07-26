@@ -70,6 +70,13 @@ Let's turn on the fake machine!
 
 ---
 
+## 📊 System Architecture Flowchart
+Below is the system architecture flowchart showing the end-to-end data pipeline from the ESP32 IoT sensor node to the backend server and live web dashboard:
+
+![System Architecture Flowchart](designs_scripts/SYSTEM_FLOWCHART.png)
+
+---
+
 ## 📁 What Are All These Folders?
 - `source_code/`: Contains the Backend, Frontend, and ESP32 code.
 - `documentation/`: Contains detailed explanations of how the project works.
