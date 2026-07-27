@@ -6,6 +6,20 @@ Imagine you have a big factory machine, and you want to know if it's getting too
 Follow these super simple steps to get it running on your own computer.
 
 ---
+## 🧰 Technologies Used
+
+<div align="center">
+
+| Domain | Technologies & Libraries |
+| :--- | :--- |
+| **Hardware & Simulation** | ![ESP32](https://img.shields.io/badge/ESP32-Microcontroller-000000?style=flat-square&logo=expressif&logoColor=white) ![Wokwi](https://img.shields.io/badge/Wokwi-Simulator-2B2D42?style=flat-square) ![MPU6050](https://img.shields.io/badge/MPU6050-Accelerometer%20%26%20Gyro-blue?style=flat-square) |
+| **Backend** | ![Node.js](https://img.shields.io/badge/Node.js-v18%2B-339933?style=flat-square&logo=node.js&logoColor=white) ![Express.js](https://img.shields.io/badge/Express.js-Backend%20API-000000?style=flat-square&logo=express&logoColor=white) ![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=flat-square&logo=sqlite&logoColor=white) ![localtunnel](https://img.shields.io/badge/localtunnel-Tunneling-41B883?style=flat-square) |
+| **Frontend** | ![HTML5](https://img.shields.io/badge/HTML5-Structure-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-Styling-1572B6?style=flat-square&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?style=flat-square&logo=javascript&logoColor=black) ![Chart.js](https://img.shields.io/badge/Chart.js-Live%20Graphs-FF6384?style=flat-square&logo=chart.js&logoColor=white) |
+| **Standards & Rules** | **ISO 10816 Standard** (Machine Vibration Evaluation) • **RMS Calculation** |
+
+</div>
+
+---
 
 ## 🛠️ What You Need to Install First
 Before you start, make sure you have these installed on your computer:
