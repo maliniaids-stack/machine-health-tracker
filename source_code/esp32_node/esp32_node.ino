@@ -5,8 +5,8 @@
 // --- Configuration ---
 const char* ssid = "Wokwi-GUEST";       // Default Wokwi WiFi
 const char* password = "";
-const char* serverName = "http://mynewmcm2026.loca.lt/api/data"; // Use http:// to avoid SSL handshake timeout in Wokwi
-const String sensorId = "node_001";
+const char* serverName = "http://ef6722de91c688.lhr.life/api/data"; // Use http:// to avoid SSL handshake timeout in Wokwi
+const String machineId = "node_001";
 
 // --- Timing (Non-blocking) ---
 unsigned long previousMillis = 0;
@@ -15,9 +15,7 @@ const long interval = 2000; // Send data every 2 seconds
 // --- Signal Smoothing (Moving Average) ---
 const int numReadings = 5;
 float tempReadings[numReadings];
-float vibXReadings[numReadings];
-float vibYReadings[numReadings];
-float vibZReadings[numReadings];
+float vibReadings[numReadings];
 int readIndex = 0;
 
 void setup() {
@@ -26,9 +24,7 @@ void setup() {
   // Initialize smoothing arrays to 0
   for (int i = 0; i < numReadings; i++) {
     tempReadings[i] = 0;
-    vibXReadings[i] = 0;
-    vibYReadings[i] = 0;
-    vibZReadings[i] = 0;
+    vibReadings[i] = 0;
   }
 
   WiFi.begin(ssid, password);
@@ -60,23 +56,32 @@ void loop() {
 
     // --- Anomaly Injection (For Video Demo) ---
     static int anomalyCounter = 0;
-    // 5% chance to start a critical event that lasts for 15 seconds
-    if (anomalyCounter == 0 && random(0, 100) < 5) { 
+    static int spikeCounter = 0;
+    
+    // 5% chance to start a critical event that lasts for 15 seconds (8 readings)
+    if (anomalyCounter == 0 && spikeCounter == 0 && random(0, 100) < 5) { 
         anomalyCounter = 8; 
+    }
+    // 5% chance to inject a single one-off spike
+    else if (anomalyCounter == 0 && spikeCounter == 0 && random(0, 100) < 5) {
+        spikeCounter = 1;
     }
 
     // 1. Read Simulated Sensors
     float rawTemp = 40.0 + random(-50, 50) / 10.0; 
-    float rawVibX = random(-50, 50) / 100.0;
-    float rawVibY = random(-50, 50) / 100.0;
-    float rawVibZ = 1.0 + random(-20, 20) / 100.0; 
+    float rawVib = 0.5 + random(-20, 20) / 100.0; // Base vibration 0.5g
 
-    // If an anomaly is happening, artificially spike the values
+    // If a lasting anomaly is happening, artificially spike the values
     if (anomalyCounter > 0) {
-        rawTemp += 30.0; // Pushes temp to ~70C (Critical > 60)
-        rawVibX += 1.5;  // Pushes RMS well above 1.5 (Critical)
-        rawVibZ += 0.5;
+        rawTemp += 45.0; // Pushes temp to ~85C (Critical > 75)
+        rawVib += 1.5;  // Pushes vibration well above 1.5 (Critical)
         anomalyCounter--;
+    } 
+    // If a one-off spike is happening, spike just for this reading
+    else if (spikeCounter > 0) {
+        rawTemp += 45.0; // Pushes temp to ~85C
+        rawVib += 1.5;
+        spikeCounter--;
     }
 
     // 2. Plausibility Checks (Ignore physically impossible spikes)
@@ -87,26 +92,44 @@ void loop() {
 
     // 3. Signal Smoothing (Update moving average arrays)
     tempReadings[readIndex] = rawTemp;
-    vibXReadings[readIndex] = rawVibX;
-    vibYReadings[readIndex] = rawVibY;
-    vibZReadings[readIndex] = rawVibZ;
+    vibReadings[readIndex] = rawVib;
     
     readIndex = (readIndex + 1) % numReadings;
 
     // Calculate smoothed values
     float smoothTemp = calculateAverage(tempReadings, numReadings);
-    float smoothVibX = calculateAverage(vibXReadings, numReadings);
-    float smoothVibY = calculateAverage(vibYReadings, numReadings);
-    float smoothVibZ = calculateAverage(vibZReadings, numReadings);
+    float smoothVib = calculateAverage(vibReadings, numReadings);
 
-    // 4. Status Evaluation (Simple RMS calculation for vibration severity)
-    float rms = sqrt(pow(smoothVibX, 2) + pow(smoothVibY, 2) + pow(smoothVibZ, 2));
-    String status = "Normal";
-    if (smoothTemp > 60 || rms > 1.5) {
-      status = "Critical";
-    } else if (smoothTemp > 50 || rms > 1.2) {
-      status = "Warning";
+    // 4. Status Evaluation (with Persistence Check)
+    static int consecutiveCritical = 0;
+    static int consecutiveWarning = 0;
+    static String currentStatus = "Normal";
+    
+    // Threshold changed: Critical Temp from 60 to 75
+    bool isCritical = (rawTemp > 75 || rawVib > 1.5);
+    bool isWarning = (rawTemp > 50 || rawVib > 1.2);
+
+    if (isCritical) {
+      consecutiveCritical++;
+      consecutiveWarning = 0;
+    } else if (isWarning) {
+      consecutiveWarning++;
+      consecutiveCritical = 0;
+    } else {
+      consecutiveCritical = 0;
+      consecutiveWarning = 0;
     }
+
+    // Must stay true for 3 consecutive readings (ignoring single spikes)
+    if (consecutiveCritical >= 3) {
+      currentStatus = "Critical";
+    } else if (consecutiveWarning >= 3) {
+      currentStatus = "Warning";
+    } else if (consecutiveCritical == 0 && consecutiveWarning == 0) {
+      currentStatus = "Normal";
+    }
+    
+    String alert_flag = currentStatus;
 
     // 5. Send HTTP POST Request
     if(WiFi.status() == WL_CONNECTED){
@@ -127,12 +150,10 @@ void loop() {
 
       // Construct JSON payload
       String jsonPayload = "{";
-      jsonPayload += "\"sensor_id\":\"" + sensorId + "\",";
+      jsonPayload += "\"machine_id\":\"" + machineId + "\",";
       jsonPayload += "\"temperature\":" + String(smoothTemp) + ",";
-      jsonPayload += "\"vibration_x\":" + String(smoothVibX) + ",";
-      jsonPayload += "\"vibration_y\":" + String(smoothVibY) + ",";
-      jsonPayload += "\"vibration_z\":" + String(smoothVibZ) + ",";
-      jsonPayload += "\"status\":\"" + status + "\"";
+      jsonPayload += "\"vibration\":" + String(smoothVib) + ",";
+      jsonPayload += "\"alert_flag\":\"" + alert_flag + "\"";
       jsonPayload += "}";
 
       int httpResponseCode = http.POST(jsonPayload);

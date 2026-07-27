@@ -6,7 +6,7 @@ let vibChart = null;
 
 // DOM Elements
 const refreshBtn = document.getElementById('refreshBtn');
-const sensorSelect = document.getElementById('sensorSelect');
+const machineSelect = document.getElementById('machineSelect');
 const timeLimit = document.getElementById('timeLimit');
 const latestStatus = document.getElementById('latestStatus');
 const latestTemp = document.getElementById('latestTemp');
@@ -93,10 +93,6 @@ function initCharts() {
     });
 }
 
-function calculateRMS(x, y, z) {
-    return Math.sqrt(x*x + y*y + z*z).toFixed(3);
-}
-
 function updateKPIs(latestData) {
     if (!latestData) {
         latestTemp.textContent = '--';
@@ -105,11 +101,10 @@ function updateKPIs(latestData) {
         return;
     }
 
-    latestTemp.textContent = latestData.temperature.toFixed(1);
-    const rms = calculateRMS(latestData.vibration_x, latestData.vibration_y, latestData.vibration_z);
-    latestVib.textContent = rms;
+    latestTemp.textContent = latestData.temperature !== null ? latestData.temperature.toFixed(1) : '--';
+    latestVib.textContent = latestData.vibration !== null ? latestData.vibration.toFixed(3) : '--';
     
-    setKPIStatus(latestData.status);
+    setKPIStatus(latestData.alert_flag);
 }
 
 function setKPIStatus(status) {
@@ -139,10 +134,10 @@ async function fetchDataAndUpdate() {
     
     try {
         const limit = timeLimit.value;
-        const sensor = sensorSelect.value;
+        const machine = machineSelect.value;
         let url = `${API_URL}?limit=${limit}`;
-        if (sensor) {
-            url += `&sensor_id=${sensor}`;
+        if (machine) {
+            url += `&machine_id=${machine}`;
         }
 
         const response = await fetch(url);
@@ -164,7 +159,7 @@ async function fetchDataAndUpdate() {
 
 function updateCharts(data) {
     const labels = data.map(d => {
-        const date = new Date(d.timestamp);
+        const date = new Date(d.recorded_at);
         return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
     });
 
@@ -190,38 +185,26 @@ function updateCharts(data) {
 
     vibChart.data = {
         labels: labels,
-        datasets: [
-            {
-                label: 'Vibration X',
-                data: data.map(d => d.vibration_x),
-                borderColor: '#3b82f6', // solid blue
-                borderWidth: 2,
-                pointRadius: 0,
-                tension: 0.4
-            },
-            {
-                label: 'Vibration Y',
-                data: data.map(d => d.vibration_y),
-                borderColor: '#10b981', // green
-                borderWidth: 2,
-                pointRadius: 0,
-                tension: 0.4
-            },
-            {
-                label: 'Vibration Z',
-                data: data.map(d => d.vibration_z),
-                borderColor: '#8b5cf6', // purple
-                borderWidth: 2,
-                pointRadius: 0,
-                tension: 0.4
-            }
-        ]
+        datasets: [{
+            label: 'Vibration',
+            data: data.map(d => d.vibration),
+            borderColor: '#3b82f6', // solid blue
+            backgroundColor: 'rgba(59, 130, 246, 0.15)',
+            borderWidth: 3,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#3b82f6',
+            pointBorderWidth: 2,
+            tension: 0.4,
+            fill: true
+        }]
     };
     vibChart.update();
 }
 
 refreshBtn.addEventListener('click', fetchDataAndUpdate);
-sensorSelect.addEventListener('change', fetchDataAndUpdate);
+machineSelect.addEventListener('change', fetchDataAndUpdate);
 timeLimit.addEventListener('change', fetchDataAndUpdate);
 
 initCharts();

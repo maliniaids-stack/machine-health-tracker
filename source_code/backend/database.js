@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-const dbPath = path.resolve(__dirname, 'mcm_data.db');
+const dbPath = path.resolve(__dirname, 'mcm_data_v2.db');
 
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
@@ -9,14 +9,12 @@ const db = new sqlite3.Database(dbPath, (err) => {
     } else {
         console.log('Connected to the SQLite database.');
         db.run(`CREATE TABLE IF NOT EXISTS sensor_data (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            sensor_id TEXT NOT NULL,
-            temperature REAL NOT NULL,
-            vibration_x REAL NOT NULL,
-            vibration_y REAL NOT NULL,
-            vibration_z REAL NOT NULL,
-            status TEXT NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            reading_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            machine_id TEXT NOT NULL,
+            vibration REAL NOT NULL,
+            temperature REAL,
+            alert_flag TEXT NOT NULL,
+            recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`, (err) => {
             if (err) {
                 console.error('Error creating table', err.message);
